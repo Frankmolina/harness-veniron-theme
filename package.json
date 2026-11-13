@@ -1,0 +1,21 @@
+{
+  "name": "@frank/veniron-theme",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Tema JARVIS básico: fondo oscuro con máscara de Vendetta tenue, texto celeste y acentos ámbar/verde.",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./icon": "./icon.svg"
+  },
+  "files": ["index.js", "client.js", "cordis.patch.yml", "icon.svg"],
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": []
+    }
+  }
+}
