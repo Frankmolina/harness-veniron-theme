@@ -69,6 +69,20 @@ Página en el slot `main` (key `veniron-launcher`) con entrada en
 Menús, listboxes y tooltips con radio de 12–14 px y cristal; el ítem activo de
 la barra lateral lleva una barra luminosa violeta→magenta.
 
+### Rebranding «VENIRON» — pendiente de reinicio (23-11-2026)
+
+Intentado y **no aplicado en caliente**: el wordmark «deepseek» de la cabecera
+lateral se pinta como imagen/SVG, no como texto, así que no se puede sustituir
+con un nodo de texto. La versión que lo resuelve (capa opaca sobre la cabecera
+medida con `ResizeObserver` + marca propia) está guardada en
+`docs/rebranding-intento-client.js.txt`.
+
+El motivo de no aplicarlo: tras varias ediciones el runtime del cliente dejó de
+recompilar el plugin en caliente (los cambios de CSS de un rebuild anterior sí
+estaban, los de JS posteriores no; recargar la ventana con Cmd+R no recompila).
+**Para aplicarlo**: copiar ese archivo sobre `client.js` y reiniciar la app una
+vez (Cmd+Q y abrir); entonces la marca VENIRON entra con el resto del tema.
+
 ## Estructura
 
 | Archivo | Papel |
