@@ -41,6 +41,20 @@ puede saber leyendo la sesión activa con `useSession`:
 No lee el micrófono ni el TTS: si no hay señal fiable de «escuchando» o
 «hablando», no lo inventa.
 
+### Panel «Veniron OS» (1.3.0)
+
+Página propia en el slot `main` (key `veniron-home`) con entrada en
+`sidebar.panellist` (orden 8). Datos reales, sin cifras inventadas:
+
+- Ruta Host `GET /api/veniron-theme/dashboard`: reutiliza `sessionQuery` para el
+  corpus de sesiones y `agents.turnBoundaryOf(session).openTurnStartSeq` para
+  saber quién trabaja ahora (mismo criterio que Mission Control, no un polling
+  del estado del agente).
+- Devuelve `counts {total, live, running}`, las 12 sesiones más recientes y el
+  objeto medido por `tokenMeter.measure()` de la sesión viva más reciente.
+- La tarjeta de tokens es defensiva: si el medidor no da cifras, muestra «—».
+- Refresco cada 10 s; clic en una fila abre esa sesión.
+
 ## Estructura
 
 | Archivo | Papel |

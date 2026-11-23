@@ -1,9 +1,9 @@
 {
   "name": "@frank/veniron-theme",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
   "type": "module",
-  "description": "Piel «Agentic OS» + orbe de estado: negro azulado, cristal, acentos violeta/rosa y una esfera que respira con la sesión.",
+  "description": "Piel «Agentic OS» + orbe de estado + panel Veniron OS con datos reales del Host.",
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
