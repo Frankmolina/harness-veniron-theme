@@ -59,12 +59,14 @@ window.__ModuleLoader__.load({
       #veniron-theme-bg {
         z-index: 2147482950;
         background-image: url("/api/veniron-theme/background");
-        background-size: min(720px, 58vw) auto;
-        background-position: center 40%;
+        background-size: min(1250px, 96vw) auto;
+        background-position: center 38%;
         background-repeat: no-repeat;
-        opacity: .07;
-        filter: blur(26px);
+        opacity: .17;
+        filter: saturate(.95) contrast(1.02);
         mix-blend-mode: screen;
+        -webkit-mask-image: radial-gradient(ellipse 78% 70% at 50% 45%, #000 0%, rgba(0,0,0,.65) 62%, transparent 100%);
+        mask-image: radial-gradient(ellipse 78% 70% at 50% 45%, #000 0%, rgba(0,0,0,.65) 62%, transparent 100%);
       }
       #veniron-noise {
         z-index: 2147483000;
@@ -193,15 +195,20 @@ window.__ModuleLoader__.load({
       /* ---------- Marca VENIRON sobre la cabecera lateral ---------- */
       .veniron-brand-overlay {
         position: fixed;
+        top: 56px;
+        left: 12px;
         z-index: 2147483000;
         display: flex;
         align-items: center;
         gap: 8px;
         box-sizing: border-box;
         height: 30px;
+        width: 232px;
         padding: 0 8px;
         border-radius: 9px;
-        background: #0b0a0d;
+        background: rgba(11,10,13,.86);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
         pointer-events: none;
       }
       .veniron-brand-glyph { width: 20px; height: 20px; flex: 0 0 auto; filter: drop-shadow(0 0 7px rgba(167,139,250,.5)); }
@@ -745,7 +752,7 @@ window.__ModuleLoader__.load({
             const el = document.createElement('div');
             el.id = id;
             el.className = 'veniron-layer';
-            if (id === 'veniron-theme-bg') el.style.backgroundImage = `url("${MASK}")`;
+            if (id === 'veniron-theme-bg') el.style.backgroundImage = 'url("/api/veniron-theme/background")';
             document.body.appendChild(el);
             return el;
           });

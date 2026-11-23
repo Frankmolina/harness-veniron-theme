@@ -1,6 +1,6 @@
 {
   "name": "@frank/veniron-theme",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "private": true,
   "type": "module",
   "description": "Piel «Agentic OS» + orbe de estado + lanzador de carpetas y scripts.",
