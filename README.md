@@ -52,8 +52,11 @@ Página propia en el slot `main` (key `veniron-home`) con entrada en
   del estado del agente).
 - Devuelve `counts {total, live, running}`, las 12 sesiones más recientes y el
   objeto medido por `tokenMeter.measure()` de la sesión viva más reciente.
-- La tarjeta de tokens es defensiva: si el medidor no da cifras, muestra «—».
+- La tarjeta de tokens es defensiva: si la proyección no da cifras, muestra «—».
 - Refresco cada 10 s; clic en una fila abre esa sesión.
+- 1.3.1: buscador por título/carpeta/id, chips Todas · En vivo · Trabajando ·
+  Inactivas, tarjetas de métricas clicables que aplican el filtro y botón
+  «Nueva sesión» (paridad con Mission Control, con la piel del vídeo).
 
 ## Estructura
 

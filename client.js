@@ -362,6 +362,50 @@ window.__ModuleLoader__.load({
       .vhome-row-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
       .vhome-row-cwd { flex: 0 1 auto; max-width: 32%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: var(--dsw-alias-label-secondary); }
       .vhome-row-meta { flex: 0 0 auto; font-size: 11px; color: var(--dsw-alias-label-secondary); font-variant-numeric: tabular-nums; }
+
+      .vhome-card.as-button { cursor: pointer; text-align: left; font: inherit; color: inherit; }
+      .vhome-card.as-button:hover { border-color: rgba(255,255,255,.14); }
+      .vhome-card.is-active { border-color: rgba(139,140,255,.45); box-shadow: 0 0 0 1px rgba(139,140,255,.25) inset, 0 18px 40px -24px rgba(0,0,0,.9); }
+      .vhome-btn.is-primary {
+        color: #fff;
+        border-color: transparent;
+        background-image: linear-gradient(135deg, #FF2E88 0%, #FF5A3C 100%);
+        box-shadow: 0 8px 26px rgba(255,46,136,.28);
+      }
+      .vhome-btn.is-primary:hover { filter: brightness(1.06); }
+      .vhome-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .vhome-search {
+        box-sizing: border-box;
+        height: 30px;
+        width: 230px;
+        max-width: 52vw;
+        padding: 0 12px;
+        font: inherit;
+        font-size: 12px;
+        color: var(--dsw-alias-label-primary);
+        background: rgba(255,255,255,.04);
+        border: 1px solid rgba(255,255,255,.09);
+        border-radius: 999px;
+        outline: none;
+      }
+      .vhome-search::placeholder { color: var(--dsw-alias-label-secondary); }
+      .vhome-search:focus { border-color: rgba(139,140,255,.55); box-shadow: 0 0 0 3px rgba(139,140,255,.14); }
+      .vhome-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+      .vhome-chip {
+        height: 26px; padding: 0 11px;
+        display: inline-flex; align-items: center;
+        font: inherit; font-size: 11px;
+        color: var(--dsw-alias-label-secondary);
+        background: transparent;
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 999px;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .vhome-chip:hover { color: var(--dsw-alias-label-primary); border-color: rgba(255,255,255,.16); }
+      .vhome-chip.is-active { color: #fff; background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.20); }
+      .vhome-scroll { max-height: 46vh; overflow: auto; }
+
       .vhome-error {
         padding: 12px 14px;
         font-size: 12px;
@@ -547,10 +591,13 @@ window.__ModuleLoader__.load({
 
     function VenironHome(props) {
       const openSession = typeof props.openSession === 'function' ? props.openSession : null;
+      const startSession = typeof props.startSession === 'function' ? props.startSession : null;
       const [data, setData] = React.useState(null);
       const [error, setError] = React.useState('');
       const [loading, setLoading] = React.useState(true);
       const [tick, setTick] = React.useState(0);
+      const [filter, setFilter] = React.useState('all');
+      const [query, setQuery] = React.useState('');
 
       React.useEffect(() => {
         let alive = true;
@@ -582,13 +629,71 @@ window.__ModuleLoader__.load({
       const items = (data && Array.isArray(data.items)) ? data.items : [];
       const usage = usageNumbers(data && data.usage);
 
-      const card = (key, value, suffix, label, extra, cool) =>
-        React.createElement('div', { key, className: 'vhome-card' + (cool ? ' cool' : '') }, [
+      const filtered = React.useMemo(() => {
+        const needle = query.trim().toLowerCase();
+        return items.filter((item) => {
+          if (filter === 'live' && !item.live) return false;
+          if (filter === 'running' && !item.running) return false;
+          if (filter === 'inactive' && item.live) return false;
+          if (!needle) return true;
+          const haystack = [item.title, item.cwd, item.id].filter(Boolean).join(' ').toLowerCase();
+          return haystack.indexOf(needle) !== -1;
+        });
+      }, [items, filter, query]);
+
+      const card = (key, value, suffix, label, extra, options) => {
+        const opts = options || {};
+        const className = 'vhome-card' + (opts.cool ? ' cool' : '') + (opts.asButton ? ' as-button' : '') +
+          (opts.active ? ' is-active' : '');
+        const children = [
           React.createElement('div', { key: 'n', className: 'vhome-num' },
             formatCount(value), suffix ? React.createElement('small', null, suffix) : null),
           React.createElement('div', { key: 'l', className: 'vhome-label' }, label),
           extra ? React.createElement('div', { key: 'k', className: 'vhome-kv' }, extra) : null,
-        ]);
+        ];
+        if (opts.asButton) {
+          return React.createElement('button', {
+            key, type: 'button', className,
+            onClick: opts.onClick,
+            'aria-pressed': opts.active === true,
+          }, children);
+        }
+        return React.createElement('div', { key, className }, children);
+      };
+
+      const chips = [
+        ['all', 'Todas'],
+        ['live', 'En vivo'],
+        ['running', 'Trabajando'],
+        ['inactive', 'Inactivas'],
+      ].map(([value, label]) => React.createElement('button', {
+        key: value,
+        type: 'button',
+        className: 'vhome-chip' + (filter === value ? ' is-active' : ''),
+        'aria-pressed': filter === value,
+        onClick: () => setFilter(value),
+      }, label));
+
+      const rows = filtered.length === 0
+        ? React.createElement('div', { key: 'empty', className: 'vhome-empty' },
+            loading ? 'Leyendo sesiones…' : 'Ninguna sesión con ese filtro.')
+        : filtered.slice(0, 40).map((item) => React.createElement('button', {
+            key: item.id,
+            type: 'button',
+            className: 'vhome-row',
+            title: item.id,
+            onClick: () => { if (openSession) openSession(item.id); },
+          }, [
+            React.createElement('span', {
+              key: 'd',
+              className: 'vhome-dot' + (item.running ? ' busy' : item.live ? ' live' : ''),
+            }),
+            React.createElement('span', { key: 't', className: 'vhome-row-title' }, item.title || item.id),
+            React.createElement('span', { key: 'c', className: 'vhome-row-cwd' },
+              item.cwd ? item.cwd.split('/').pop() : ''),
+            React.createElement('span', { key: 'm', className: 'vhome-row-meta' },
+              item.running ? 'trabajando' : timeAgo(item.updatedAt)),
+          ]));
 
       return React.createElement('div', { className: 'vhome' },
         React.createElement('div', { className: 'vhome-inner' }, [
@@ -600,6 +705,12 @@ window.__ModuleLoader__.load({
             ]),
             React.createElement('div', { key: 'a', className: 'vhome-actions' }, [
               React.createElement('button', {
+                key: 'n',
+                type: 'button',
+                className: 'vhome-btn is-primary',
+                onClick: () => { if (startSession) startSession(); },
+              }, 'Nueva sesión'),
+              React.createElement('button', {
                 key: 'r',
                 type: 'button',
                 className: 'vhome-btn',
@@ -610,13 +721,21 @@ window.__ModuleLoader__.load({
           ]),
 
           error ? React.createElement('div', { key: 'err', className: 'vhome-error' },
-            'No pude leer el panel: ' + error) : null,
+            'No pude leer el panel: ' + error + ' — si el Host no recargó el plugin, reinicia la app.') : null,
 
           React.createElement('div', { key: 'grid', className: 'vhome-grid' }, [
-            card('live', counts.live, 'vivas', 'Sesiones en vivo', null, true),
-            card('busy', counts.running, 'ahora', 'Trabajando ahora',
-              counts.running > 0 ? [React.createElement('span', { key: 'b' }, React.createElement('b', null, counts.running), ' agentes en turno')] : null),
-            card('total', counts.total, 'total', 'Sesiones guardadas', null),
+            card('live', counts.live, 'vivas', 'Sesiones en vivo', null, {
+              cool: true, asButton: true, active: filter === 'live',
+              onClick: () => setFilter(filter === 'live' ? 'all' : 'live'),
+            }),
+            card('busy', counts.running, 'ahora', 'Trabajando ahora', null, {
+              asButton: true, active: filter === 'running',
+              onClick: () => setFilter(filter === 'running' ? 'all' : 'running'),
+            }),
+            card('total', counts.total, 'total', 'Sesiones guardadas', null, {
+              asButton: true, active: filter === 'inactive',
+              onClick: () => setFilter(filter === 'inactive' ? 'all' : 'inactive'),
+            }),
             card('tokens',
               usage
                 ? (usage.total !== null
@@ -636,38 +755,27 @@ window.__ModuleLoader__.load({
           React.createElement('div', { key: 'list', className: 'vhome-section' }, [
             React.createElement('div', { key: 'h', className: 'vhome-section-head' }, [
               React.createElement('h2', { key: 't', className: 'vhome-section-title' }, 'Room to grow.'),
-              React.createElement('span', { key: 'n', className: 'vhome-section-note' },
-                items.length ? items.slice(0, 8).length + ' recientes' : ''),
+              React.createElement('div', { key: 'tools', className: 'vhome-tools' }, [
+                React.createElement('input', {
+                  key: 'q',
+                  type: 'search',
+                  className: 'vhome-search',
+                  placeholder: 'Buscar por título, carpeta o id…',
+                  value: query,
+                  onChange: (event) => setQuery(event.target.value),
+                  'aria-label': 'Buscar sesiones',
+                }),
+              ]),
             ]),
-            React.createElement('div', { key: 'rows', className: 'vhome-list' },
-              items.length === 0
-                ? React.createElement('div', { key: 'empty', className: 'vhome-empty' },
-                    loading ? 'Leyendo sesiones…' : 'No hay sesiones todavía.')
-                : items.slice(0, 8).map((item) => React.createElement('button', {
-                    key: item.id,
-                    type: 'button',
-                    className: 'vhome-row',
-                    title: item.id,
-                    onClick: () => { if (openSession) openSession(item.id); },
-                  }, [
-                    React.createElement('span', {
-                      key: 'd',
-                      className: 'vhome-dot' + (item.running ? ' busy' : item.live ? ' live' : ''),
-                    }),
-                    React.createElement('span', { key: 't', className: 'vhome-row-title' },
-                      item.title || item.id),
-                    React.createElement('span', { key: 'c', className: 'vhome-row-cwd' },
-                      item.cwd ? item.cwd.split('/').pop() : ''),
-                    React.createElement('span', { key: 'm', className: 'vhome-row-meta' },
-                      item.running ? 'trabajando' : timeAgo(item.updatedAt)),
-                  ])),
-            ),
+            React.createElement('div', { key: 'chips', className: 'vhome-chips' }, chips),
+            React.createElement('div', { key: 'rows', className: 'vhome-list vhome-scroll' }, rows),
           ]),
 
           React.createElement('div', { key: 'foot', className: 'vhome-foot' },
-            data && data.generatedAt
-              ? 'Actualizado ' + new Date(data.generatedAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
-              : ''),
+            (filtered.length !== items.length ? filtered.length + ' de ' + items.length + ' · ' : '') +
+            (data && data.generatedAt
+              ? new Date(data.generatedAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+              : '')),
         ]),
       );
     }
@@ -711,6 +819,13 @@ window.__ModuleLoader__.load({
               /* si no hay forma de abrir, el panel sigue siendo de solo lectura */
             }
           };
+          const startSession = () => {
+            try {
+              if (workspace && typeof workspace.startSession === 'function') workspace.startSession();
+            } catch (error) {
+              /* sin acción de nueva sesión, el resto del panel sigue igual */
+            }
+          };
           const disposeIcon = ctx.slots.inject('sidebar.panellist', () =>
             ctx.slots.register(
               { name: 'sidebar.panellist', id: HOME_ID, order: 8, label: () => 'Veniron OS' },
@@ -720,7 +835,7 @@ window.__ModuleLoader__.load({
           const disposePage = ctx.slots.inject('main', () =>
             ctx.slots.register(
               { name: 'main', key: HOME_ID },
-              (slotProps) => React.createElement(VenironHome, { ...slotProps, openSession }),
+              (slotProps) => React.createElement(VenironHome, { ...slotProps, openSession, startSession }),
             ),
           );
           return () => { disposeIcon(); disposePage(); };
