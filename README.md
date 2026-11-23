@@ -41,22 +41,14 @@ puede saber leyendo la sesión activa con `useSession`:
 No lee el micrófono ni el TTS: si no hay señal fiable de «escuchando» o
 «hablando», no lo inventa.
 
-### Panel «Veniron OS» (1.3.0)
+### Panel «Veniron OS» — probado y retirado (23-11-2026)
 
-Página propia en el slot `main` (key `veniron-home`) con entrada en
-`sidebar.panellist` (orden 8). Datos reales, sin cifras inventadas:
+Se construyó (commits `621c68a`…`bff8737`) con paridad de funciones frente a
+Mission Control: contadores, buscador, chips de filtro, Nueva sesión y uso de
+tokens desde `sessionProjections`. Frank lo probó y **prefirió Mission Control**,
+así que la página y su ruta `/api/veniron-theme/dashboard` se retiraron en la
+v1.4.0. El orbe y la piel se quedan. Para recuperarlo: `git show bff8737:client.js`.
 
-- Ruta Host `GET /api/veniron-theme/dashboard`: reutiliza `sessionQuery` para el
-  corpus de sesiones y `agents.turnBoundaryOf(session).openTurnStartSeq` para
-  saber quién trabaja ahora (mismo criterio que Mission Control, no un polling
-  del estado del agente).
-- Devuelve `counts {total, live, running}`, las 12 sesiones más recientes y el
-  objeto medido por `tokenMeter.measure()` de la sesión viva más reciente.
-- La tarjeta de tokens es defensiva: si la proyección no da cifras, muestra «—».
-- Refresco cada 10 s; clic en una fila abre esa sesión.
-- 1.3.1: buscador por título/carpeta/id, chips Todas · En vivo · Trabajando ·
-  Inactivas, tarjetas de métricas clicables que aplican el filtro y botón
-  «Nueva sesión» (paridad con Mission Control, con la piel del vídeo).
 
 ## Estructura
 
