@@ -1,9 +1,9 @@
 {
   "name": "@frank/veniron-theme",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
-  "description": "Piel «Agentic OS»: negro azulado, cristal, acentos violeta/rosa, rejilla y grano. Inspirada en el dashboard del vídeo de Jack Roberts.",
+  "description": "Piel «Agentic OS» + orbe de estado: negro azulado, cristal, acentos violeta/rosa y una esfera que respira con la sesión.",
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",

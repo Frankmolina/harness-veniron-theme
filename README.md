@@ -25,6 +25,22 @@ Inspirada en el dashboard «Agentic OS» que sale en el vídeo de Jack Roberts
 - **Detalles**: scrollbar de 9 px violeta, selección violeta, foco visible de
   2 px, código con fondo casi negro y texto lavanda.
 
+### Orbe de estado (1.2.0)
+
+Esfera flotante de 52 px en la esquina inferior derecha, registrada en el slot
+`conversation.composer.dock` (id `veniron-orb`, orden 40). Sólo afirma lo que
+puede saber leyendo la sesión activa con `useSession`:
+
+- **Reposo**: núcleo teal que respira cada 5,2 s, anillo tenue.
+- **Trabajando** (`session.running === true`): núcleo magenta, halo y un arco
+  cónico girando cada 1,15 s.
+- **Acaba de terminar**: destello teal de 0,95 s.
+- `prefers-reduced-motion` desactiva todas las animaciones.
+- `title` y `aria-label` anuncian «Veniron en reposo / trabajando / ha terminado».
+
+No lee el micrófono ni el TTS: si no hay señal fiable de «escuchando» o
+«hablando», no lo inventa.
+
 ## Estructura
 
 | Archivo | Papel |

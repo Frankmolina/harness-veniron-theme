@@ -1,5 +1,5 @@
 /**
- * Veniron Theme — piel «Agentic OS» para el Harness.
+ * Veniron Theme — piel «Agentic OS» + orbe de estado para el Harness.
  *
  * Inspirada en la app que sale en el vídeo de Jack Roberts (Agentic OS):
  * negro azulado, superficies de cristal, bordes de 1 px casi invisibles,
@@ -166,6 +166,108 @@ window.__ModuleLoader__.load({
       [data-role="user"], [data-message-role="user"] {
         color: #F1EEFF !important;
       }
+
+      /* ---------- Orbe de estado (Live · Listening del video) ---------- */
+      .veniron-orb {
+        position: fixed;
+        right: 20px;
+        bottom: 104px;
+        z-index: 2147483200;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 50% 42%, rgba(20,20,28,.86), rgba(8,8,12,.82));
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,.10);
+        box-shadow:
+          0 12px 34px -14px rgba(0,0,0,.95),
+          inset 0 1px 0 rgba(255,255,255,.06);
+        pointer-events: auto;
+        transition: transform .22s ease, border-color .22s ease;
+      }
+      .veniron-orb:hover {
+        transform: scale(1.05);
+        border-color: rgba(255,255,255,.15);
+      }
+      .veniron-orb-halo,
+      .veniron-orb-ring,
+      .veniron-orb-core {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .veniron-orb-halo {
+        inset: -4px;
+        background: radial-gradient(circle, rgba(20,224,200,.34), rgba(20,224,200,.08) 55%, transparent 72%);
+        filter: blur(5px);
+        animation: veniron-breathe 5.2s ease-in-out infinite;
+      }
+      .veniron-orb-core {
+        width: 20px;
+        height: 20px;
+        background:
+          radial-gradient(circle at 32% 26%, rgba(255,255,255,.92) 0%, rgba(255,255,255,0) 26%),
+          radial-gradient(circle at 40% 34%, #B9FFF6 0%, #14E0C8 46%, #08655C 100%);
+        box-shadow: 0 0 12px rgba(20,224,200,.6), inset 0 -1px 2px rgba(0,0,0,.35);
+        animation: veniron-breathe 5.2s ease-in-out infinite;
+      }
+      .veniron-orb-ring {
+        inset: 6px;
+        border: 1px solid rgba(20,224,200,.26);
+        opacity: .55;
+      }
+
+      .veniron-orb.is-busy .veniron-orb-halo {
+        inset: -6px;
+        background: radial-gradient(circle, rgba(255,46,136,.42), rgba(139,140,255,.14) 58%, transparent 74%);
+        filter: blur(6px);
+        animation: veniron-breathe 1.6s ease-in-out infinite;
+      }
+      .veniron-orb.is-busy .veniron-orb-core {
+        width: 18px;
+        height: 18px;
+        background:
+          radial-gradient(circle at 32% 26%, rgba(255,255,255,.95) 0%, rgba(255,255,255,0) 26%),
+          radial-gradient(circle at 40% 34%, #FFD9E8 0%, #FF2E88 54%, #8C0B4E 100%);
+        box-shadow: 0 0 14px rgba(255,46,136,.7), inset 0 -1px 2px rgba(0,0,0,.35);
+        animation: veniron-breathe 1.2s ease-in-out infinite;
+      }
+      .veniron-orb.is-busy .veniron-orb-ring {
+        border: 0;
+        opacity: 1;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg 210deg,
+          rgba(139,140,255,.85) 255deg,
+          #FF2E88 330deg,
+          transparent 360deg
+        );
+        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.4px), #000 calc(100% - 2.2px));
+        mask: radial-gradient(farthest-side, transparent calc(100% - 2.4px), #000 calc(100% - 2.2px));
+        animation: veniron-spin 1.15s linear infinite;
+      }
+      .veniron-orb.is-flash .veniron-orb-core {
+        background: radial-gradient(circle at 34% 28%, #FFFFFF 0%, #14E0C8 55%, #0A7E73 100%);
+        box-shadow: 0 0 18px rgba(20,224,200,.9);
+        animation: veniron-flash .9s ease-out 1;
+      }
+
+      @keyframes veniron-breathe {
+        0%, 100% { transform: scale(.92); opacity: .72; }
+        50%      { transform: scale(1.08); opacity: 1; }
+      }
+      @keyframes veniron-spin { to { transform: rotate(360deg); } }
+      @keyframes veniron-flash {
+        0%   { transform: scale(1.6); opacity: 1; }
+        60%  { transform: scale(1);   opacity: 1; }
+        100% { transform: scale(.92); opacity: .8; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .veniron-orb-halo, .veniron-orb-core, .veniron-orb-ring { animation: none !important; }
+      }
     `;
 
     const TOKENS = {
@@ -227,9 +329,64 @@ window.__ModuleLoader__.load({
       store.icon = icon;
     }
 
+    // Orbe de estado: la esfera del video, en miniatura, junto al composer.
+    // Solo afirma lo que sabe: la sesión está trabajando o está en reposo.
+    function VenironOrb(props) {
+      const useSession = typeof props.useSession === 'function' ? props.useSession : null;
+      const busy = useSession === null
+        ? false
+        : useSession((session) => (session ? session.running === true : false));
+      const [flash, setFlash] = React.useState(false);
+      const was = React.useRef(false);
+
+      React.useEffect(() => {
+        if (was.current && !busy) {
+          setFlash(true);
+          const timer = window.setTimeout(() => setFlash(false), 950);
+          was.current = busy;
+          return () => window.clearTimeout(timer);
+        }
+        was.current = busy;
+        return undefined;
+      }, [busy]);
+
+      const label = busy
+        ? 'Veniron trabajando'
+        : flash
+          ? 'Veniron ha terminado'
+          : 'Veniron en reposo';
+      const className =
+        'veniron-orb' + (busy ? ' is-busy' : '') + (flash ? ' is-flash' : '');
+
+      return React.createElement(
+        'div',
+        { className, title: label, 'aria-label': label, role: 'img' },
+        [
+          React.createElement('span', { key: 'halo', className: 'veniron-orb-halo' }),
+          React.createElement('span', { key: 'ring', className: 'veniron-orb-ring' }),
+          React.createElement('span', { key: 'core', className: 'veniron-orb-core' }),
+        ],
+      );
+    }
+
     return {
-      inject: ['theme'],
+      inject: ['theme', 'slots'],
       apply(ctx) {
+        ctx.effect(() => {
+          if (!ctx.slots) return undefined;
+          return ctx.slots.inject('conversation.composer.dock', () =>
+            ctx.slots.register(
+              {
+                name: 'conversation.composer.dock',
+                id: 'veniron-orb',
+                order: 40,
+                label: () => 'Veniron',
+              },
+              VenironOrb,
+            ),
+          );
+        }, 'veniron-theme: orbe de estado');
+
         ctx.effect(() => {
           // La app arranca en modo claro en algunos equipos: forzamos oscuro
           // para que no queden superficies blancas con texto casi blanco.
