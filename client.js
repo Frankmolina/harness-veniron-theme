@@ -30,12 +30,12 @@ window.__ModuleLoader__.load({
     const CSS = `
       /* ---------- Fondo: gradientes + rejilla + grano + viñeta ---------- */
       html {
-        background-color: #06060a !important;
+        background-color: #0b0a0d !important;
         background-image:
-          radial-gradient(1100px 680px at 88% -12%, rgba(124,58,237,.26), transparent 60%),
-          radial-gradient(1000px 620px at -8% 108%, rgba(34,211,238,.14), transparent 60%),
-          radial-gradient(760px 520px at 52% 118%, rgba(244,63,94,.12), transparent 65%),
-          linear-gradient(180deg, #09090f 0%, #06060a 55%, #050507 100%) !important;
+          radial-gradient(1100px 680px at 86% -14%, rgba(124,58,237,.20), transparent 62%),
+          radial-gradient(900px 560px at -6% 106%, rgba(20,224,200,.10), transparent 60%),
+          radial-gradient(720px 480px at 52% 118%, rgba(255,46,136,.09), transparent 66%),
+          linear-gradient(180deg, #0b0a0d 0%, #0a0a0c 55%, #09090b 100%) !important;
         background-attachment: fixed !important;
       }
       body { background: transparent !important; }
@@ -50,8 +50,8 @@ window.__ModuleLoader__.load({
         z-index: 2147482900;
         opacity: .55;
         background-image:
-          linear-gradient(rgba(255,255,255,.038) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,.038) 1px, transparent 1px);
+          linear-gradient(rgba(255,255,255,.032) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,.032) 1px, transparent 1px);
         background-size: 44px 44px;
         -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 38%, #000 0%, transparent 78%);
         mask-image: radial-gradient(ellipse 90% 70% at 50% 38%, #000 0%, transparent 78%);
@@ -80,19 +80,20 @@ window.__ModuleLoader__.load({
 
       /* ---------- Tokens propios de la piel ---------- */
       :root, html, body {
-        --veniron-violet: #A78BFA;
-        --veniron-rose: #F43F5E;
-        --veniron-cyan: #22D3EE;
-        --veniron-ink: #06060a;
-        --veniron-text: #ECECF3;
-        --veniron-text-dim: #A6A3BC;
+        --veniron-periwinkle: #8B8CFF;
+        --veniron-magenta: #FF2E88;
+        --veniron-coral: #E8734A;
+        --veniron-teal: #14E0C8;
+        --veniron-ink: #0b0a0d;
+        --veniron-text: #F2F2F5;
+        --veniron-text-dim: #9A9AA3;
         --veniron-border: rgba(255,255,255,.07);
         --veniron-border-strong: rgba(255,255,255,.13);
         --veniron-glass: rgba(255,255,255,.035);
 
         --dsw-radius-sm: 8px;
         --dsw-radius-md: 12px;
-        --dsw-radius-lg: 16px;
+        --dsw-radius-lg: 20px;
         --dsw-radius-xl: 22px;
 
         --dsw-alias-label-tertiary: rgba(196,181,253,.72);
@@ -122,7 +123,7 @@ window.__ModuleLoader__.load({
       *::-webkit-scrollbar-track { background: transparent; }
 
       *:focus-visible {
-        outline: 2px solid rgba(167,139,250,.75);
+        outline: 2px solid rgba(139,140,255,.85);
         outline-offset: 2px;
         border-radius: 6px;
       }
@@ -132,18 +133,29 @@ window.__ModuleLoader__.load({
       button[class*="send"],
       [class*="send-button"],
       [class*="composer"] button[class*="accent"] {
-        background-image: linear-gradient(135deg, #A78BFA 0%, #E879F9 52%, #F43F5E 100%) !important;
+        background-image: linear-gradient(135deg, #FF2E88 0%, #FF5A3C 100%) !important;
         border-color: transparent !important;
         color: #FFFFFF !important;
-        box-shadow: 0 6px 22px rgba(167,139,250,.30);
+        box-shadow: 0 8px 26px rgba(255,46,136,.32);
+      }
+
+      /* Costuras del video: sidebar separada por un hairline, tarjetas casi
+         del color del fondo con un brillo interno de 1 px. */
+      [class*="sidebar"], [class*="Sidebar"] {
+        border-right: 1px solid rgba(255,255,255,.06) !important;
+      }
+      [class*="card"] {
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,.04),
+          0 18px 40px -24px rgba(0,0,0,.9);
       }
 
       /* Red de seguridad: si algún componente sigue con color claro, forzamos
          contraste legible. Va después de los tokens para ganar siempre. */
       code, kbd, samp {
-        background: rgba(167,139,250,.15) !important;
-        color: #E4DBFF !important;
-        border-color: rgba(167,139,250,.28) !important;
+        background: rgba(139,140,255,.14) !important;
+        color: #E6E6FF !important;
+        border-color: rgba(139,140,255,.28) !important;
       }
       pre {
         background: rgba(9,9,14,.94) !important;
@@ -158,39 +170,39 @@ window.__ModuleLoader__.load({
 
     const TOKENS = {
       // Lienzo y superficies
-      '--dsw-alias-bg-base':          { light: 'rgba(8,8,13,.55)',        dark: 'rgba(8,8,13,.55)' },
-      '--dsw-alias-bg-layer-1':       { light: 'rgba(255,255,255,.035)',  dark: 'rgba(255,255,255,.035)' },
-      '--dsw-alias-bg-layer-2':       { light: 'rgba(255,255,255,.055)',  dark: 'rgba(255,255,255,.055)' },
-      '--dsw-alias-bg-overlay':       { light: 'rgba(10,10,16,.97)',      dark: 'rgba(10,10,16,.97)' },
+      '--dsw-alias-bg-base':          { light: 'rgba(11,10,13,.58)',      dark: 'rgba(11,10,13,.58)' },
+      '--dsw-alias-bg-layer-1':       { light: 'rgba(255,255,255,.032)',  dark: 'rgba(255,255,255,.032)' },
+      '--dsw-alias-bg-layer-2':       { light: 'rgba(255,255,255,.05)',   dark: 'rgba(255,255,255,.05)' },
+      '--dsw-alias-bg-overlay':       { light: 'rgba(12,12,16,.97)',      dark: 'rgba(12,12,16,.97)' },
       '--dsw-alias-border-l1':        { light: 'rgba(255,255,255,.07)',   dark: 'rgba(255,255,255,.07)' },
-      '--dsw-alias-border-l2':        { light: 'rgba(255,255,255,.13)',   dark: 'rgba(255,255,255,.13)' },
+      '--dsw-alias-border-l2':        { light: 'rgba(255,255,255,.11)',   dark: 'rgba(255,255,255,.11)' },
 
       // Marca y texto
-      '--dsw-alias-brand-primary':    { light: '#A78BFA',                 dark: '#A78BFA' },
-      '--dsw-alias-label-primary':    { light: '#ECECF3',                 dark: '#ECECF3' },
-      '--dsw-alias-label-secondary':  { light: '#A6A3BC',                 dark: '#A6A3BC' },
+      '--dsw-alias-brand-primary':    { light: '#8B8CFF',                 dark: '#8B8CFF' },
+      '--dsw-alias-label-primary':    { light: '#F2F2F5',                 dark: '#F2F2F5' },
+      '--dsw-alias-label-secondary':  { light: '#9A9AA3',                 dark: '#9A9AA3' },
 
       // Estados
-      '--dsw-alias-state-error-primary':   { light: '#FB7185',            dark: '#FB7185' },
-      '--dsw-alias-state-idle-primary':    { light: '#8B8FA3',            dark: '#8B8FA3' },
-      '--dsw-alias-state-success-primary': { light: '#34D399',            dark: '#34D399' },
-      '--dsw-alias-state-warn-primary':    { light: '#FBBF24',            dark: '#FBBF24' },
+      '--dsw-alias-state-error-primary':   { light: '#FF4D5E',            dark: '#FF4D5E' },
+      '--dsw-alias-state-idle-primary':    { light: '#6E6E78',            dark: '#6E6E78' },
+      '--dsw-alias-state-success-primary': { light: '#14E0C8',            dark: '#14E0C8' },
+      '--dsw-alias-state-warn-primary':    { light: '#F0B429',            dark: '#F0B429' },
 
       // Barra lateral
-      '--dsw-specific-sidebar-fill':  { light: 'rgba(6,6,11,.62)',        dark: 'rgba(6,6,11,.62)' },
+      '--dsw-specific-sidebar-fill':  { light: 'rgba(10,10,13,.55)',      dark: 'rgba(10,10,13,.55)' },
 
       // Chat: burbujas, código, caja de escribir, menús
-      '--dsw-specific-bubble':            { light: 'rgba(167,139,250,.13)', dark: 'rgba(167,139,250,.13)' },
-      '--dsw-specific-bubble-highlight':  { light: 'rgba(167,139,250,.20)', dark: 'rgba(167,139,250,.20)' },
-      '--dsw-alias-markdown-inline-code': { light: 'rgba(167,139,250,.15)', dark: 'rgba(167,139,250,.15)' },
-      '--dsw-alias-markdown-code-block':  { light: 'rgba(9,9,14,.93)',      dark: 'rgba(9,9,14,.93)' },
-      '--dsw-alias-markdown-code-block-banner': { light: 'rgba(167,139,250,.09)', dark: 'rgba(167,139,250,.09)' },
+      '--dsw-specific-bubble':            { light: 'rgba(255,255,255,.06)', dark: 'rgba(255,255,255,.06)' },
+      '--dsw-specific-bubble-highlight':  { light: 'rgba(255,255,255,.09)', dark: 'rgba(255,255,255,.09)' },
+      '--dsw-alias-markdown-inline-code': { light: 'rgba(255,255,255,.08)', dark: 'rgba(255,255,255,.08)' },
+      '--dsw-alias-markdown-code-block':  { light: 'rgba(9,9,11,.95)',      dark: 'rgba(9,9,11,.95)' },
+      '--dsw-alias-markdown-code-block-banner': { light: 'rgba(255,255,255,.04)', dark: 'rgba(255,255,255,.04)' },
       '--dsw-specific-input-major':       { light: 'rgba(10,10,16,.90)',    dark: 'rgba(10,10,16,.90)' },
       '--dsw-specific-login-input':       { light: 'rgba(10,10,16,.90)',    dark: 'rgba(10,10,16,.90)' },
       '--dsw-specific-menu':              { light: 'rgba(12,12,19,.97)',    dark: 'rgba(12,12,19,.97)' },
-      '--dsw-specific-selector':          { light: 'rgba(167,139,250,.10)', dark: 'rgba(167,139,250,.10)' },
+      '--dsw-specific-selector':          { light: 'rgba(255,255,255,.06)', dark: 'rgba(255,255,255,.06)' },
       '--dsw-specific-tip':               { light: 'rgba(12,12,19,.97)',    dark: 'rgba(12,12,19,.97)' },
-      '--dsw-specific-file-upload-track': { light: 'rgba(167,139,250,.16)', dark: 'rgba(167,139,250,.16)' },
+      '--dsw-specific-file-upload-track': { light: 'rgba(139,140,255,.18)', dark: 'rgba(139,140,255,.18)' },
     };
 
     const LAYERS = ['veniron-grid', 'veniron-theme-bg', 'veniron-noise', 'veniron-vignette'];
