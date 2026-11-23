@@ -89,14 +89,22 @@ async function dashboard(ctx, signal) {
     };
   }).sort((left, right) => right.updatedAt - left.updatedAt);
 
-  // Tokens de la sesión más reciente, si el medidor del Host los da.
+  // Uso de la sesión más reciente. La API correcta en el Host son las
+  // proyecciones (`tokenUsage` y `sessionStats`), no `tokenMeter`: sus campos
+  // son uncachedInputTokens/cacheReadTokens/cacheWriteTokens/outputTokens.
   let usage = null;
   try {
     const newest = items.find((item) => item.live) || items[0];
     const session = newest && sessions && sessions.get ? sessions.get(newest.id) : undefined;
-    if (session && meter && typeof meter.measure === 'function') {
-      const measured = meter.measure(session);
-      if (measured && typeof measured === 'object') usage = measured;
+    const projections = ctx.get('sessionProjections');
+    if (session && projections && typeof projections.snapshot === 'function') {
+      const snapshot = projections.snapshot(session, ['tokenUsage', 'sessionStats']);
+      if (snapshot) {
+        usage = {
+          tokenUsage: snapshot.tokenUsage || null,
+          sessionStats: snapshot.sessionStats || null,
+        };
+      }
     }
   } catch {
     usage = null;

@@ -517,24 +517,31 @@ window.__ModuleLoader__.load({
       return n >= 1 ? n.toFixed(2) + ' €' : n.toFixed(3) + ' €';
     }
 
-    // El medidor del Host devuelve un objeto cuyo nombre de campo no está
-    // documentado en este plugin: se prueban los habituales y, si no hay
-    // ninguno, la tarjeta dice «sin datos» en vez de inventar una cifra.
+    // El Host entrega `{ tokenUsage, sessionStats }` con los campos de las
+    // proyecciones del Harness; si no vienen, la tarjeta dice «—».
     function usageNumbers(usage) {
       if (!usage || typeof usage !== 'object') return null;
-      const pick = (names) => {
-        for (const name of names) {
-          const value = Number(usage[name]);
-          if (Number.isFinite(value)) return value;
-        }
-        return null;
+      const raw = usage.tokenUsage;
+      if (!raw || typeof raw !== 'object') return null;
+      const num = (value) => {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
       };
+      const uncached = num(raw.uncachedInputTokens);
+      const cacheRead = num(raw.cacheReadTokens);
+      const cacheWrite = num(raw.cacheWriteTokens);
+      const output = num(raw.outputTokens);
+      if (uncached === null && cacheRead === null && cacheWrite === null && output === null) return null;
+      const input = (uncached || 0) + (cacheRead || 0) + (cacheWrite || 0);
+      const stats = usage.sessionStats && typeof usage.sessionStats === 'object' ? usage.sessionStats : {};
       return {
-        input: pick(['input', 'inputTokens', 'promptTokens']),
-        output: pick(['output', 'outputTokens', 'completionTokens']),
-        cacheRead: pick(['cacheRead', 'cacheReadTokens', 'cached']),
-        cacheWrite: pick(['cacheWrite', 'cacheWriteTokens']),
-        total: pick(['total', 'totalTokens', 'tokens']),
+        input,
+        output: output || 0,
+        cacheRead: cacheRead || 0,
+        cacheWrite: cacheWrite || 0,
+        total: input + (output || 0),
+        steps: num(stats.steps),
+        turns: num(stats.turns),
       };
     }
 
@@ -621,7 +628,8 @@ window.__ModuleLoader__.load({
               usage ? [
                 React.createElement('span', { key: 'i' }, 'entrada ', React.createElement('b', null, usage.input === null ? '—' : formatCount(usage.input))),
                 React.createElement('span', { key: 'o' }, 'salida ', React.createElement('b', null, usage.output === null ? '—' : formatCount(usage.output))),
-                React.createElement('span', { key: 'c' }, 'caché ', React.createElement('b', null, usage.cacheRead === null ? '—' : formatCount(usage.cacheRead))),
+                React.createElement('span', { key: 'c' }, 'caché ', React.createElement('b', null, formatCount(usage.cacheRead))),
+                usage.steps === null ? null : React.createElement('span', { key: 's' }, 'pasos ', React.createElement('b', null, formatCount(usage.steps))),
               ] : null),
           ]),
 
