@@ -56,6 +56,23 @@ window.__ModuleLoader__.load({
       * { scrollbar-color: rgba(0,216,255,.35) transparent; }
       *::-webkit-scrollbar-thumb { background: rgba(0,216,255,.35); border-radius: 999px; }
       *::-webkit-scrollbar-track { background: transparent; }
+
+      /* Red de seguridad: si algún componente sigue con color claro, forzamos
+         contraste legible. Va después de los tokens para ganar siempre. */
+      code, kbd, samp {
+        background: rgba(0,216,255,.15) !important;
+        color: #CFF9FF !important;
+        border-color: rgba(0,216,255,.30) !important;
+      }
+      pre {
+        background: rgba(4,12,18,.92) !important;
+        color: #DFF6FF !important;
+        border-color: rgba(0,216,255,.24) !important;
+      }
+      pre code, pre code * { background: transparent !important; color: #DFF6FF !important; }
+      [class*="bubble"], [data-role="user"], [data-message-role="user"] {
+        color: #E0F7FF !important;
+      }
     `;
 
     const TOKENS = {
@@ -73,6 +90,22 @@ window.__ModuleLoader__.load({
       '--dsw-alias-state-success-primary': { light: '#00FF66',            dark: '#00FF66' },
       '--dsw-alias-state-warn-primary':    { light: '#FFB000',            dark: '#FFB000' },
       '--dsw-specific-sidebar-fill':  { light: 'rgba(3,10,16,.64)',       dark: 'rgba(3,10,16,.64)' },
+
+      // Burbujas del chat y código: sin esto la app usa sus valores claros
+      // y el texto (casi blanco) desaparece sobre fondo blanco.
+      '--dsw-specific-bubble':            { light: 'rgba(0,216,255,.13)', dark: 'rgba(0,216,255,.13)' },
+      '--dsw-specific-bubble-highlight':  { light: 'rgba(0,216,255,.22)', dark: 'rgba(0,216,255,.22)' },
+      '--dsw-alias-markdown-inline-code': { light: 'rgba(0,216,255,.15)', dark: 'rgba(0,216,255,.15)' },
+      '--dsw-alias-markdown-code-block':  { light: 'rgba(4,12,18,.90)',   dark: 'rgba(4,12,18,.90)' },
+      '--dsw-alias-markdown-code-block-banner': { light: 'rgba(0,216,255,.10)', dark: 'rgba(0,216,255,.10)' },
+
+      // Caja de escribir, menús y demás superficies "specific"
+      '--dsw-specific-input-major': { light: 'rgba(6,16,24,.92)', dark: 'rgba(6,16,24,.92)' },
+      '--dsw-specific-login-input': { light: 'rgba(6,16,24,.92)', dark: 'rgba(6,16,24,.92)' },
+      '--dsw-specific-menu':        { light: 'rgba(6,16,24,.96)', dark: 'rgba(6,16,24,.96)' },
+      '--dsw-specific-selector':    { light: 'rgba(0,216,255,.10)', dark: 'rgba(0,216,255,.10)' },
+      '--dsw-specific-tip':         { light: 'rgba(8,20,30,.96)', dark: 'rgba(8,20,30,.96)' },
+      '--dsw-specific-file-upload-track': { light: 'rgba(0,216,255,.16)', dark: 'rgba(0,216,255,.16)' },
     };
 
     function installMark(store) {
@@ -99,6 +132,10 @@ window.__ModuleLoader__.load({
       inject: ['theme'],
       apply(ctx) {
         ctx.effect(() => {
+          // La app arranca en modo claro en algunos equipos: forzamos oscuro
+          // para que no queden superficies blancas con texto casi blanco.
+          try { if (ctx.theme && ctx.theme.setTheme) ctx.theme.setTheme('dark'); } catch (e) {}
+
           const disposeTokens = ctx.theme.overrideTokens('veniron-theme', TOKENS);
           const style = document.createElement('style');
           style.id = 'veniron-theme-style';
