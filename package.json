@@ -1,9 +1,9 @@
 {
   "name": "@frank/veniron-theme",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "type": "module",
-  "description": "Piel «Agentic OS» + orbe de estado flotante. Sin panel propio: Frank prefiere Mission Control.",
+  "description": "Piel «Agentic OS» + orbe de estado + lanzador de carpetas y scripts.",
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",

@@ -167,6 +167,73 @@ window.__ModuleLoader__.load({
         color: #F1EEFF !important;
       }
 
+
+      /* ---------- Lanzador de Frank ---------- */
+      .vla { display: flex; flex-direction: column; height: 100%; overflow: auto; padding: 30px 34px 40px; box-sizing: border-box; }
+      .vla-inner { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 1040px; margin: 0 auto; }
+      .vla-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+      .vla-title {
+        margin: 0; font-size: 28px; line-height: 1.1; font-weight: 650; letter-spacing: -.025em;
+        background: linear-gradient(92deg, #F4F3F8 0%, #C5C6E0 60%, #9FA8FF 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      .vla-sub { margin: 6px 0 0; font-size: 12.5px; color: var(--dsw-alias-label-secondary); }
+      .vla-status { font-size: 11px; color: var(--dsw-alias-label-secondary); font-variant-numeric: tabular-nums; }
+      .vla-search {
+        box-sizing: border-box; width: 100%; height: 44px; padding: 0 16px;
+        font: inherit; font-size: 14px; color: var(--dsw-alias-label-primary);
+        background: rgba(255,255,255,.04);
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 14px; outline: none;
+      }
+      .vla-search::placeholder { color: var(--dsw-alias-label-secondary); }
+      .vla-search:focus { border-color: rgba(139,140,255,.6); box-shadow: 0 0 0 4px rgba(139,140,255,.13), 0 0 22px -6px rgba(255,46,136,.45); }
+      .vla-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+      @media (max-width: 980px) { .vla-cols { grid-template-columns: 1fr; } }
+      .vla-section { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+      .vla-section-head { display: flex; align-items: baseline; gap: 8px; }
+      .vla-section-title { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--dsw-alias-label-secondary); }
+      .vla-count { font-size: 10.5px; color: var(--dsw-alias-label-secondary); }
+      .vla-list { display: flex; flex-direction: column; gap: 3px; }
+      .vla-row {
+        display: flex; align-items: center; gap: 10px;
+        box-sizing: border-box; width: 100%; padding: 9px 11px;
+        font: inherit; text-align: left; color: inherit;
+        background: transparent; border: 1px solid transparent; border-radius: 11px;
+        cursor: pointer;
+      }
+      .vla-row:hover, .vla-row.is-first { background: rgba(255,255,255,.045); border-color: rgba(255,255,255,.08); }
+      .vla-row:active { background: rgba(139,140,255,.14); }
+      .vla-icon { flex: 0 0 auto; display: inline-flex; color: #9FA8FF; }
+      .vla-icon.term { color: #14E0C8; }
+      .vla-name { flex: 0 1 auto; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .vla-hint { flex: 1 1 auto; min-width: 0; font-size: 10.5px; color: var(--dsw-alias-label-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: rtl; text-align: right; }
+      .vla-badge { flex: 0 0 auto; font-size: 10px; color: #14E0C8; }
+      .vla-empty { padding: 14px 11px; font-size: 12px; color: var(--dsw-alias-label-secondary); }
+      .vla-error { padding: 12px 14px; font-size: 12px; color: #FFB3BC; background: rgba(255,77,94,.08); border: 1px solid rgba(255,77,94,.35); border-radius: 12px; }
+      .vla-foot { font-size: 10.5px; color: var(--dsw-alias-label-secondary); }
+
+      /* ---------- Pulido: menús, tooltips y fila activa ---------- */
+      [role="menu"], [role="listbox"], [role="tooltip"] { border-radius: 12px !important; }
+      [class*="menu"][class*="popup"], [class*="menu"][class*="panel"], [class*="popover"] {
+        border-radius: 14px !important;
+        -webkit-backdrop-filter: blur(18px) saturate(1.1);
+        backdrop-filter: blur(18px) saturate(1.1);
+      }
+      [role="menuitem"][aria-selected="true"], [role="option"][aria-selected="true"] {
+        box-shadow: inset 2px 0 0 rgba(255,46,136,.85);
+      }
+      [class*="sidebar"] [aria-current="page"] { position: relative; }
+      [class*="sidebar"] [aria-current="page"]::before {
+        content: '';
+        position: absolute;
+        left: 2px; top: 22%; bottom: 22%; width: 2px;
+        border-radius: 2px;
+        background: linear-gradient(180deg, #8B8CFF, #FF2E88);
+        box-shadow: 0 0 8px rgba(255,46,136,.65);
+        pointer-events: none;
+      }
+
       /* ---------- Orbe de estado (Live · Listening del video) ---------- */
       .veniron-orb {
         position: fixed;
@@ -370,6 +437,152 @@ window.__ModuleLoader__.load({
       );
     }
 
+
+    /* ---------------- Lanzador de Frank ---------------- */
+
+    const LAUNCH_ID = 'veniron-launcher';
+
+    const FOLDER_ICON = React.createElement(
+      'svg',
+      { width: 15, height: 15, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' },
+      [React.createElement('path', { key: 'a', d: 'M3 7.5A2.5 2.5 0 0 1 5.5 5H9l2 2h7.5A2.5 2.5 0 0 1 21 9.5v7A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z' })],
+    );
+
+    const TERM_ICON = React.createElement(
+      'svg',
+      { width: 15, height: 15, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' },
+      [
+        React.createElement('rect', { key: 'a', x: 3, y: 4, width: 18, height: 16, rx: 3 }),
+        React.createElement('path', { key: 'b', d: 'M7 9.5l3 2.5-3 2.5M13 15h4' }),
+      ],
+    );
+
+    function VenironLauncher() {
+      const [data, setData] = React.useState(null);
+      const [error, setError] = React.useState('');
+      const [query, setQuery] = React.useState('');
+      const [opened, setOpened] = React.useState('');
+      const inputRef = React.useRef(null);
+
+      React.useEffect(() => {
+        let alive = true;
+        fetch('/api/veniron-theme/launcher', { credentials: 'same-origin' })
+          .then((response) => {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
+          })
+          .then((payload) => { if (alive) { setData(payload); setError(''); } })
+          .catch((reason) => { if (alive) setError(reason && reason.message ? reason.message : 'No se pudo leer'); });
+        return () => { alive = false; };
+      }, []);
+
+      React.useEffect(() => {
+        if (inputRef.current) inputRef.current.focus();
+      }, []);
+
+      const all = React.useMemo(() => {
+        const folders = data && Array.isArray(data.folders) ? data.folders : [];
+        const scripts = data && Array.isArray(data.scripts) ? data.scripts : [];
+        return { folders, scripts };
+      }, [data]);
+
+      const needle = query.trim().toLowerCase();
+      const match = (item) =>
+        !needle ||
+        item.name.toLowerCase().indexOf(needle) !== -1 ||
+        (item.path || '').toLowerCase().indexOf(needle) !== -1;
+
+      const folders = all.folders.filter(match);
+      const scripts = all.scripts.filter(match);
+      const first = folders.length ? folders[0] : scripts.length ? scripts[0] : null;
+
+      const run = (item) => {
+        if (!item) return;
+        setOpened(item.path);
+        fetch('/api/veniron-theme/open', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ path: item.path, kind: item.kind }),
+        })
+          .then((response) => response.json())
+          .then((payload) => { if (!payload || payload.ok !== true) setError((payload && payload.error) || 'No se pudo abrir'); })
+          .catch((reason) => setError(reason && reason.message ? reason.message : 'No se pudo abrir'));
+        window.setTimeout(() => setOpened(''), 1400);
+      };
+
+      const row = (item, isFirst) => React.createElement('button', {
+        key: item.path,
+        type: 'button',
+        className: 'vla-row' + (isFirst ? ' is-first' : ''),
+        title: item.path,
+        onClick: () => run(item),
+      }, [
+        React.createElement('span', { key: 'i', className: 'vla-icon' + (item.kind === 'script' ? ' term' : '') },
+          item.kind === 'script' ? TERM_ICON : FOLDER_ICON),
+        React.createElement('span', { key: 'n', className: 'vla-name' }, item.name),
+        React.createElement('span', { key: 'h', className: 'vla-hint' }, item.hint || ''),
+        opened === item.path ? React.createElement('span', { key: 'b', className: 'vla-badge' }, 'abierto') : null,
+      ]);
+
+      const section = (title, items, empty) =>
+        React.createElement('section', { className: 'vla-section' }, [
+          React.createElement('div', { key: 'h', className: 'vla-section-head' }, [
+            React.createElement('h2', { key: 't', className: 'vla-section-title' }, title),
+            React.createElement('span', { key: 'c', className: 'vla-count' }, items.length + ''),
+          ]),
+          React.createElement('div', { key: 'l', className: 'vla-list' },
+            items.length === 0
+              ? React.createElement('div', { key: 'e', className: 'vla-empty' }, empty)
+              : items.map((item, index) => row(item, first !== null && first.path === item.path && index === 0))),
+        ]);
+
+      return React.createElement('div', { className: 'vla' },
+        React.createElement('div', { className: 'vla-inner' }, [
+          React.createElement('div', { key: 'head', className: 'vla-head' }, [
+            React.createElement('div', { key: 't' }, [
+              React.createElement('h1', { key: 'h', className: 'vla-title' }, 'Lanzador'),
+              React.createElement('p', { key: 'p', className: 'vla-sub' }, 'Tus carpetas y tus scripts, a dos letras.'),
+            ]),
+            React.createElement('div', { key: 's', className: 'vla-status' },
+              data ? all.folders.length + ' carpetas · ' + all.scripts.length + ' scripts' : 'Leyendo…'),
+          ]),
+          React.createElement('input', {
+            key: 'q',
+            ref: inputRef,
+            type: 'search',
+            className: 'vla-search',
+            placeholder: 'Buscar… (Enter abre lo primero, Esc limpia)',
+            value: query,
+            onChange: (event) => setQuery(event.target.value),
+            onKeyDown: (event) => {
+              if (event.key === 'Enter') run(first);
+              if (event.key === 'Escape') setQuery('');
+            },
+            'aria-label': 'Buscar carpetas y scripts',
+          }),
+          error ? React.createElement('div', { key: 'err', className: 'vla-error' }, 'Error: ' + error) : null,
+          React.createElement('div', { key: 'cols', className: 'vla-cols' }, [
+            section('Carpetas', folders, 'Ninguna carpeta coincide.'),
+            section('Scripts', scripts, 'Ningún script coincide.'),
+          ]),
+          React.createElement('div', { key: 'foot', className: 'vla-foot' },
+            'Las carpetas se abren en Finder; los scripts, en Terminal. Nada sale de tu Mac.'),
+        ]),
+      );
+    }
+
+    function VenironLauncherIcon() {
+      return React.createElement('svg', {
+        width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none',
+        stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round',
+        'aria-hidden': true,
+      }, [
+        React.createElement('path', { key: 'a', d: 'M4 7.5A2.5 2.5 0 0 1 6.5 5h3l2 2h6A2.5 2.5 0 0 1 20 9.5v6A2.5 2.5 0 0 1 17.5 18h-11A2.5 2.5 0 0 1 4 15.5z' }),
+        React.createElement('path', { key: 'b', d: 'M9 11.5l2 1.7-2 1.7M13.5 15H15' }),
+      ]);
+    }
+
     return {
       inject: ['theme', 'slots'],
       apply(ctx) {
@@ -387,6 +600,20 @@ window.__ModuleLoader__.load({
             ),
           );
         }, 'veniron-theme: orbe de estado');
+
+        ctx.effect(() => {
+          if (!ctx.slots) return undefined;
+          const disposeIcon = ctx.slots.inject('sidebar.panellist', () =>
+            ctx.slots.register(
+              { name: 'sidebar.panellist', id: LAUNCH_ID, order: 5, label: () => 'Lanzador' },
+              VenironLauncherIcon,
+            ),
+          );
+          const disposePage = ctx.slots.inject('main', () =>
+            ctx.slots.register({ name: 'main', key: LAUNCH_ID }, VenironLauncher),
+          );
+          return () => { disposeIcon(); disposePage(); };
+        }, 'veniron-theme: lanzador');
 
         ctx.effect(() => {
           // La app arranca en modo claro en algunos equipos: forzamos oscuro

@@ -50,6 +50,25 @@ así que la página y su ruta `/api/veniron-theme/dashboard` se retiraron en la
 v1.4.0. El orbe y la piel se quedan. Para recuperarlo: `git show bff8737:client.js`.
 
 
+### Lanzador (1.5.0)
+
+Página en el slot `main` (key `veniron-launcher`) con entrada en
+`sidebar.panellist` (orden 5). Enter abre el primer resultado, Esc limpia.
+
+- `GET /api/veniron-theme/launcher` lista 13 carpetas curadas del home y los
+  scripts de `~/bin` y `~/Deepseek_Hardness` (extensión conocida **o** bit de
+  ejecución, sin `.bak` ni `__pycache__`).
+- `POST /api/veniron-theme/open { path, kind }` abre la carpeta en Finder o el
+  script en Terminal con `execFile('open', …)`: **sin shell**, sólo rutas
+  absolutas cuyo `realpath` cae dentro del home.
+- Si Frank se queda en modo creador, esto es el sitio natural para añadir sus
+  accesos (editar `FOLDER_ROOTS` en `index.js`).
+
+### Pulido (1.5.0)
+
+Menús, listboxes y tooltips con radio de 12–14 px y cristal; el ítem activo de
+la barra lateral lleva una barra luminosa violeta→magenta.
+
 ## Estructura
 
 | Archivo | Papel |
