@@ -1,17 +1,24 @@
 {
   "name": "@frank/veniron-theme",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "Tema JARVIS básico: fondo oscuro con máscara de Vendetta tenue, texto celeste y acentos ámbar/verde.",
+  "description": "Piel «Agentic OS»: negro azulado, cristal, acentos violeta/rosa, rejilla y grano. Inspirada en el dashboard del vídeo de Jack Roberts.",
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
     "./icon": "./icon.svg"
   },
-  "files": ["index.js", "client.js", "cordis.patch.yml", "icon.svg"],
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "icon.svg"
+  ],
   "dsh": {
-    "bundle": { "patch": "./cordis.patch.yml" },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
     "client": {
       "platform": "web",
       "immediately": true,

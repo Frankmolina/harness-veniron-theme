@@ -1,0 +1,47 @@
+# Harness Veniron Theme — piel «Agentic OS»
+
+Tema visual para DeepSeek Harness, instalado como plugin cliente del perfil
+`desktop`. No toca la estructura de la app: sólo cambia tokens `--dsw-alias-*`,
+pinta capas de fondo decorativas y afina unos pocos detalles con selectores
+seguros. Desactivarlo (o desinstalarlo) devuelve la app a su aspecto original al
+instante.
+
+## Qué hace esta versión (1.1.0)
+
+Inspirada en el dashboard «Agentic OS» que sale en el vídeo de Jack Roberts
+(*I Tested Uncensored AI…*, 7-nov-2026, min. 3:35 y 10:00):
+
+- **Fondo**: negro azulado con tres degradados radiales (violeta arriba a la
+  derecha, cian abajo a la izquierda, rosa abajo al centro), una rejilla de
+  44 px enmascarada con degradado, grano fino (`feTurbulence`) y viñeta suave.
+- **Superficies de cristal**: capas 1/2 con blanco al 3,5 % y 5,5 %, bordes de
+  1 px al 7 % y 13 %, radios 8/12/16/22 px.
+- **Acento**: violeta `#A78BFA` para marca y estados de negocio; el botón
+  principal (enviar/confirmar) lleva degradado violeta → fucsia → rosa.
+- **Texto**: `#ECECF3` primario, `#A6A3BC` secundario (contraste > 7:1 sobre el
+  fondo), terciario violeta claro.
+- **Identidad**: la máscara de Vendetta queda como resplandor difuminado
+  (`blur 26px`, opacidad 7 %) y sigue coronando la cuenta en la barra lateral.
+- **Detalles**: scrollbar de 9 px violeta, selección violeta, foco visible de
+  2 px, código con fondo casi negro y texto lavanda.
+
+## Estructura
+
+| Archivo | Papel |
+|---|---|
+| `client.js` | Mitad cliente: tokens, CSS y capas de fondo decorativas. |
+| `index.js` | Mitad host: sirve la máscara 4K y el icono de cuenta desde el Mac. |
+| `cordis.patch.yml` | Inserta la fila del plugin en el perfil. |
+| `icon.svg` | Icono del plugin (máscara con degradado violeta→rosa). |
+| `mark.jpg` | Icono pequeño que sustituye al avatar en «Iniciado sesión». |
+
+## Reversible
+
+```bash
+cd ~/Deepseek_Hardness/Harness/plugins/veniron-theme
+git log --oneline        # commits: 53d5888 tema JARVIS · cdb436e estado previo · …
+git revert <commit>      # o: git checkout 53d5888 -- client.js index.js package.json icon.svg
+```
+
+El fondo 4K se sirve desde `~/Pictures/Wallpapers/V_de_Vendetta_4K_rosa.jpg`;
+si falta, la ruta responde 404 y el tema sigue funcionando sin ese detalle.
