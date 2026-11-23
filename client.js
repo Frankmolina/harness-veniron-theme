@@ -133,7 +133,7 @@ window.__ModuleLoader__.load({
       button[class*="send"],
       [class*="send-button"],
       [class*="composer"] button[class*="accent"] {
-        background-image: linear-gradient(135deg, #FF2E88 0%, #FF5A3C 100%) !important;
+        background-image: linear-gradient(135deg, #14E0C8 0%, #8B8CFF 100%) !important;
         border-color: transparent !important;
         color: #FFFFFF !important;
         box-shadow: 0 8px 26px rgba(255,46,136,.32);
@@ -167,6 +167,51 @@ window.__ModuleLoader__.load({
         color: #F1EEFF !important;
       }
 
+
+
+      /* ---------- Marca VENIRON en la cabecera lateral (rebranding) ---------- */
+      .veniron-brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+      .veniron-brand-glyph { width: 21px; height: 21px; flex: 0 0 auto; filter: drop-shadow(0 0 7px rgba(167,139,250,.5)); }
+      .veniron-brand-text { display: flex; flex-direction: column; gap: 2px; line-height: 1; min-width: 0; }
+      .veniron-brand-name {
+        font-size: 12.5px;
+        font-weight: 700;
+        letter-spacing: .17em;
+        background: linear-gradient(92deg, #C9CAFF 0%, #D9A8FF 48%, #FF8FB8 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .veniron-brand-sub {
+        font-size: 7px;
+        letter-spacing: .24em;
+        font-weight: 500;
+        color: var(--dsw-alias-label-secondary);
+      }
+
+
+      /* ---------- Marca VENIRON sobre la cabecera lateral ---------- */
+      .veniron-brand-overlay {
+        position: fixed;
+        z-index: 2147483000;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-sizing: border-box;
+        height: 30px;
+        padding: 0 8px;
+        border-radius: 9px;
+        background: #0b0a0d;
+        pointer-events: none;
+      }
+      .veniron-brand-glyph { width: 20px; height: 20px; flex: 0 0 auto; filter: drop-shadow(0 0 7px rgba(167,139,250,.5)); }
+      .veniron-brand-text { display: flex; flex-direction: column; gap: 2px; line-height: 1; }
+      .veniron-brand-name {
+        font-size: 12.5px; font-weight: 700; letter-spacing: .17em;
+        background: linear-gradient(92deg, #C9CAFF 0%, #D9A8FF 48%, #FF8FB8 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      .veniron-brand-sub { font-size: 7px; letter-spacing: .24em; font-weight: 500; color: var(--dsw-alias-label-secondary); }
 
       /* ---------- Lanzador de Frank ---------- */
       .vla { display: flex; flex-direction: column; height: 100%; overflow: auto; padding: 30px 34px 40px; box-sizing: border-box; }
@@ -374,6 +419,75 @@ window.__ModuleLoader__.load({
       '--dsw-specific-tip':               { light: 'rgba(12,12,19,.97)',    dark: 'rgba(12,12,19,.97)' },
       '--dsw-specific-file-upload-track': { light: 'rgba(139,140,255,.18)', dark: 'rgba(139,140,255,.18)' },
     };
+
+
+    const BRAND_SVG = `<svg class="veniron-brand-glyph" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="veniron-brand-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#A78BFA"/>
+          <stop offset=".55" stop-color="#E879F9"/>
+          <stop offset="1" stop-color="#FF2E88"/>
+        </linearGradient>
+      </defs>
+      <path fill="url(#veniron-brand-grad)" d="M128 28c-40 0-64 27-64 72 0 60 31 96 64 120 33-24 64-60 64-120 0-45-24-72-64-72z"/>
+      <path fill="#0b0a0d" d="M94 112c8-10 22-10 31 0-9 7-22 7-31 0zm37 0c8-10 22-10 31 0-9 7-22 7-31 0z"/>
+      <path fill="#0b0a0d" d="M96 144c13-8 22-7 32 0 10-7 19-8 32 0-12 12-20 15-32 9-12 6-20 3-32-9z"/>
+      <path fill="#0b0a0d" d="M116 168c9-5 17-5 24 0-5 21-8 28-12 33-4-5-7-12-12-33z"/>
+    </svg>`;
+
+    // Rebranding de la cabecera lateral. El wordmark «deepseek» (ballena +
+    // texto + chip HARNESS) se pinta como imagen, así que no se puede
+    // reemplazar como texto: se tapa con una capa opaca del color del sidebar
+    // y en su sitio va la marca de la casa. Es reversible: al recargar,
+    // desaparece. Se recoloca sola si el sidebar cambia de tamaño.
+    function findSidebar() {
+      let best = null;
+      let bestArea = Infinity;
+      for (const el of Array.from(document.body.querySelectorAll('div, aside, nav, section'))) {
+        const rect = el.getBoundingClientRect();
+        if (rect.left > 6) continue;
+        if (rect.width < 180 || rect.width > 420) continue;
+        if (rect.height < 500) continue;
+        const area = rect.width * rect.height;
+        if (area < bestArea) { best = el; bestArea = area; }
+      }
+      return best;
+    }
+
+    function installBrand(store) {
+      if (store.brand && store.brand.isConnected) return;
+      const sidebar = findSidebar();
+      const el = document.createElement('div');
+      el.className = 'veniron-brand-overlay';
+      el.setAttribute('aria-label', 'Veniron');
+      el.innerHTML =
+        BRAND_SVG +
+        '<span class="veniron-brand-text">' +
+        '<span class="veniron-brand-name">VENIRON</span>' +
+        '<span class="veniron-brand-sub">HARNESS OS</span>' +
+        '</span>';
+      document.body.appendChild(el);
+
+      const place = () => {
+        const rect = sidebar ? sidebar.getBoundingClientRect() : null;
+        if (rect && rect.width < 150) { el.style.display = 'none'; return; }
+        el.style.display = 'flex';
+        el.style.left = (rect ? Math.round(rect.left + 12) : 12) + 'px';
+        el.style.top = (rect ? Math.round(rect.top + 56) : 56) + 'px';
+        el.style.width = (rect ? Math.min(232, Math.round(rect.width) - 24) : 190) + 'px';
+      };
+      place();
+
+      let observer = null;
+      try {
+        observer = new ResizeObserver(place);
+        observer.observe(sidebar);
+      } catch (error) {
+        observer = null;
+      }
+      store.brand = el;
+      store.brandCleanup = () => { if (observer) observer.disconnect(); };
+    }
 
     const LAYERS = ['veniron-grid', 'veniron-theme-bg', 'veniron-noise', 'veniron-vignette'];
 
@@ -636,18 +750,44 @@ window.__ModuleLoader__.load({
             return el;
           });
 
-          const store = { img: null, icon: null };
-          installMark(store);
-          const observer = new MutationObserver(() => installMark(store));
+          const store = { img: null, icon: null, brand: null, brandTarget: null };
+          const debug = (text) => {
+            let box = document.getElementById('veniron-debug');
+            if (!box) {
+              box = document.createElement('div');
+              box.id = 'veniron-debug';
+              box.style.cssText = 'position:fixed;top:8px;right:8px;z-index:2147483647;background:#7f1d1d;color:#fff;font:11px/1.4 monospace;padding:6px 8px;border-radius:8px;max-width:420px;white-space:pre-wrap';
+              document.body.appendChild(box);
+            }
+            box.textContent = text;
+          };
+          window.addEventListener('error', (event) => debug('error: ' + (event.message || '?')), { once: true });
+          try {
+            installMark(store);
+            installBrand(store);
+          } catch (error) {
+            debug('brand-fail: ' + (error && error.message ? error.message : String(error)));
+          }
+          if (!store.brand) {
+            window.setTimeout(() => { try { installBrand(store); } catch (e) { debug('retry-fail: ' + e.message); } if (!store.brand) debug('brand: sin sidebar ni overlay'); }, 1500);
+          }
+          const observer = new MutationObserver(() => {
+            installMark(store);
+            try { installBrand(store); } catch (error) { debug('observer-fail: ' + error.message); }
+          });
           observer.observe(document.body, { childList: true, subtree: true });
 
           return () => {
+            if (store.brandCleanup) store.brandCleanup();
             disposeTokens();
             style.remove();
             for (const el of layers) el.remove();
             observer.disconnect();
             if (store.img) store.img.remove();
             if (store.icon) store.icon.style.display = '';
+            if (store.brand) store.brand.remove();
+            if (store.brandNode) store.brandNode.nodeValue = store.brandText || 'deepseek';
+            if (store.brandElement) store.brandElement.style.removeProperty('display');
           };
         });
       },
